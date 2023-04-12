@@ -26,6 +26,7 @@ func load_config_and_generate_cubes(path):
 	
 	for child in get_children():
 		remove_child(child)
+	universes = {}
 	
 	while not file.eof_reached():
 		var line = file.get_line()
@@ -95,13 +96,15 @@ func poll_udp_packets():
 				if packet.get_string_from_ascii() == "Art-Net":
 					parse_artnet_packet(packet)
 
+func _input(event):
+	if event is InputEventKey:
+		if Input.get_action_strength("open_file"):
+			var fd = $"../CanvasLayer/FileDialog"
+			if not fd.is_visible():
+				fd.popup_centered()
+		elif Input.get_action_strength("reload_file"):
+			load_config_and_generate_cubes(current_file_path)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if Input.get_action_strength("open_file"):
-		var fd = $"../CanvasLayer/FileDialog"
-		if not fd.is_visible():
-			fd.popup_centered()
-	elif Input.get_action_strength("reload_file"):
-		load_config_and_generate_cubes(current_file_path)
 	poll_udp_packets()
