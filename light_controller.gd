@@ -1,16 +1,14 @@
 extends Node3D
 
 # Path to the config file
-const CONFIG_FILE = "res://lights.csv"
-const LIGHT_SIZE = 0.01
 const EMISSION_ENERGY = 2
 const ARTNET_PORT = 6454
 
 var universes = {}
 var udp_server = UDPServer.new()
+var current_file_path
 
 func _ready():
-	load_config_and_generate_cubes(CONFIG_FILE)
 	setup_udp_server()
 
 func setup_udp_server():
@@ -20,10 +18,15 @@ func _exit_tree():
 	udp_server.stop()
 
 func load_config_and_generate_cubes(path):
+	current_file_path = path
 	var file = FileAccess.open(path, FileAccess.READ)
 
 	var i = 0
 	file.get_line() # skip first line
+	
+	for child in get_children():
+		remove_child(child)
+	
 	while not file.eof_reached():
 		var line = file.get_line()
 		if not line.is_empty():
@@ -36,7 +39,8 @@ func load_config_and_generate_cubes(path):
 				universes[universe] = {}
 			
 			var lightMesh = BoxMesh.new()
-			lightMesh.set_size(Vector3(LIGHT_SIZE,LIGHT_SIZE,LIGHT_SIZE))
+			var size = float(data[8])
+			lightMesh.set_size(Vector3(size,size,size))
 			
 			var emitter = create_emissive_material()
 			universes[universe][channel] = emitter
@@ -62,8 +66,13 @@ func create_emissive_material():
 	material.emission_energy = EMISSION_ENERGY
 	return material
 
+func decode_u16le(packet, offset):
+	var lsb = packet.decode_u8(offset) # Art-Net universe
+	var msb = packet.decode_u8(offset+1) # Art-Net universe
+	return (msb<<8) + lsb
+
 func parse_artnet_packet(packet):
-	var universe = packet.decode_u16(14) # Art-Net universe
+	var universe = decode_u16le(packet, 14)
 	var dmx_data = packet.slice(18) # DMX data
 	var dmx_data_size = dmx_data.size()
 
@@ -89,4 +98,10 @@ func poll_udp_packets():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if Input.get_action_strength("open_file"):
+		var fd = $"../CanvasLayer/FileDialog"
+		if not fd.is_visible():
+			fd.popup_centered()
+	elif Input.get_action_strength("reload_file"):
+		load_config_and_generate_cubes(current_file_path)
 	poll_udp_packets()
