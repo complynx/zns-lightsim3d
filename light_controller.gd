@@ -7,9 +7,32 @@ const ARTNET_PORT = 6454
 var universes = {}
 var udp_server = UDPServer.new()
 var current_file_path
+var universe0 = {}
 
 func _ready():
 	setup_udp_server()
+	universe0 = {
+		1: $"../Lisoborie/fixtures/mh/MH1",
+		14: $"../Lisoborie/fixtures/mh/MH2",
+		27: $"../Lisoborie/fixtures/mh/MH3",
+		40: $"../Lisoborie/fixtures/mh/MH4",
+		53: $"../Lisoborie/fixtures/bars/B1",
+		58: $"../Lisoborie/fixtures/bars/B2",
+		63: $"../Lisoborie/fixtures/bars/B3",
+		68: $"../Lisoborie/fixtures/bars/B4",
+		73: $"../Lisoborie/fixtures/bars/B5",
+		78: $"../Lisoborie/fixtures/bars/B6",
+		83: $"../Lisoborie/fixtures/bars/B7",
+		88: $"../Lisoborie/fixtures/bars/B8",
+		93: $"../Lisoborie/fixtures/pars/P1",
+		102: $"../Lisoborie/fixtures/pars/P2",
+		111: $"../Lisoborie/fixtures/pars/P3",
+		120: $"../Lisoborie/fixtures/pars/P4",
+		129: $"../Lisoborie/fixtures/pars/P5",
+		138: $"../Lisoborie/fixtures/pars/P6",
+		147: $"../Lisoborie/fixtures/pars/P7",
+		156: $"../Lisoborie/fixtures/pars/P8"
+	}
 
 func setup_udp_server():
 	udp_server.listen(ARTNET_PORT)
@@ -76,13 +99,17 @@ func parse_artnet_packet(packet):
 	var universe = decode_u16le(packet, 14)
 	var dmx_data = packet.slice(18) # DMX data
 	var dmx_data_size = dmx_data.size()
-
+	if universe == 0:
+		for channel in universe0:
+			if dmx_data_size >= channel:
+				universe0[channel].parse_dmx(dmx_data.slice(channel-1))
+	
 	if universes.has(universe):
 		for channel in universes[universe]:
-			if dmx_data_size > channel + 2:
-				var R = dmx_data[channel]
-				var G = dmx_data[channel+1]
-				var B = dmx_data[channel+2]
+			if dmx_data_size > channel + 1:
+				var R = dmx_data[channel-1]
+				var G = dmx_data[channel]
+				var B = dmx_data[channel+1]
 				
 				set_color(universes[universe][channel],R,G,B)
 

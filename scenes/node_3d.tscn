@@ -399,11 +399,11 @@ script = ExtResource("13_c1vow")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="FileDialog" type="FileDialog" parent="CanvasLayer"]
-title = "Open a lights description file"
+title = "Open a File"
 position = Vector2i(125, 57)
 size = Vector2i(869, 549)
 visible = true
-ok_button_text = "Open lights file"
+ok_button_text = "Open"
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.csv")
