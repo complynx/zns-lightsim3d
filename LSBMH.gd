@@ -16,6 +16,7 @@ const STROBE_NONE = 1
 const STROBE_SLOW = 0.5 # 1 hertz cycle, duty = 1/2
 const STROBE_FAST = 1./18./2. # 18 hertz per cycle, duty = 1/2
 
+# DMX Channels names
 var PanMSB = 0
 var TiltMSB = 0
 var Speed = 0
@@ -29,6 +30,7 @@ var ColorProgram = 0
 var Program = 0
 var PanLSB = 0
 var TiltLSB = 0
+
 var pan_current = 0
 var tilt_current = 0
 var speed_current = 0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://ct8onfmoent3w"]
+[gd_scene load_steps=33 format=3 uid="uid://ct8onfmoent3w"]
 
 [ext_resource type="Script" path="res://Camera.gd" id="1_tqkuy"]
 [ext_resource type="PackedScene" path="res://scenes/ceiling_lamps.tscn" id="2_2t7ss"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://scenes/stuff.tscn" id="8_tclhl"]
 [ext_resource type="Texture2D" uid="uid://b7yaq7h0jpdfh" path="res://textures/Lisoborie_Speaker Base Color.png" id="10_y411w"]
 [ext_resource type="Script" path="res://FileDialog.gd" id="11_hbivo"]
+[ext_resource type="Script" path="res://FPSCounter.gd" id="12_yqhit"]
 [ext_resource type="Script" path="res://light_controller.gd" id="13_c1vow"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tcj80"]
@@ -408,5 +409,18 @@ file_mode = 0
 access = 2
 filters = PackedStringArray("*.csv")
 script = ExtResource("11_hbivo")
+
+[node name="FPSCounter" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 2.0
+offset_right = 272.0
+offset_bottom = 60.0
+script = ExtResource("12_yqhit")
+
+[node name="Label" type="Label" parent="CanvasLayer/FPSCounter"]
+layout_mode = 0
+offset_right = 270.0
+offset_bottom = 38.0
 
 [connection signal="file_selected" from="CanvasLayer/FileDialog" to="CanvasLayer/FileDialog" method="_on_FileDialog_file_selected"]

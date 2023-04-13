@@ -6,11 +6,13 @@ const STROBE_NONE = 10
 const STROBE_SLOW = 0.5 # 1 hertz cycle, duty = 1/2
 const STROBE_FAST = 1./18./2. # 18 hertz per cycle, duty = 1/2
 
+# DMX Channels names
 var R = 0
 var G = 0
 var B = 0
 var Dimmer = 0
 var Strobe = 0
+
 var color
 var current_cycle = true # enabled
 var current_strobe_speed = 0
