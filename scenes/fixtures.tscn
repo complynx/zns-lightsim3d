@@ -856,15 +856,16 @@ shadow_mesh = SubResource("ArrayMesh_7tyoa")
 [node name="mh" type="Node3D" parent="."]
 
 [node name="MH3" type="Node3D" parent="mh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.29009, 4.13967, 4.646)
 script = ExtResource("1_lrcm6")
 
 [node name="chasis" type="MeshInstance3D" parent="mh/MH3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.30634, 4.09006, 4.41619)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00119805, -0.0350199, 5.05447e-05)
 mesh = SubResource("ArrayMesh_dfv0k")
 skeleton = NodePath("")
 
 [node name="light" type="SpotLight3D" parent="mh/MH3"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -8.30634, 4.035, 4.41619)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.00119805, -0.0900812, 5.05447e-05)
 light_color = Color(0.976471, 0, 0.988235, 1)
 light_energy = 6.977
 light_indirect_energy = 4.849
@@ -876,20 +877,21 @@ spot_angle = 18.43
 spot_angle_attenuation = 7.35167
 
 [node name="light_source" type="MeshInstance3D" parent="mh/MH3"]
-transform = Transform3D(0.999929, 0.0119298, 0, -0.0119298, 0.999929, 0, 0, 0, 1, -8.30453, 4.04133, 4.41161)
+transform = Transform3D(0.999929, 0.0119298, 0, -0.0119298, 0.999929, 0, 0, 0, 1, 0.00061202, -0.0837507, -0.00452948)
 mesh = SubResource("ArrayMesh_d55jk")
 skeleton = NodePath("")
 
 [node name="MH4" type="Node3D" parent="mh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.29149, 4.10856, 1.85077)
 script = ExtResource("1_lrcm6")
 
 [node name="chasis" type="MeshInstance3D" parent="mh/MH4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.30634, 4.09006, 1.9771)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00316703, -0.000699997, 0.00170434)
 mesh = SubResource("ArrayMesh_yesn6")
 skeleton = NodePath("")
 
 [node name="light" type="SpotLight3D" parent="mh/MH4"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -8.30634, 4.035, 1.9771)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.00316703, -0.0557604, 0.00170434)
 light_color = Color(1, 0, 0.919238, 1)
 light_energy = 6.977
 light_indirect_energy = 4.849
@@ -901,20 +903,21 @@ spot_angle = 18.43
 spot_angle_attenuation = 7.35167
 
 [node name="light_source" type="MeshInstance3D" parent="mh/MH4"]
-transform = Transform3D(0.999929, 0.0119298, 0, -0.0119298, 0.999929, 0, 0, 0, 1, -8.30453, 4.04133, 1.97679)
+transform = Transform3D(0.999929, 0.0119298, 0, -0.0119298, 0.999929, 0, 0, 0, 1, 0.00497711, -0.0494308, 0.00139415)
 mesh = SubResource("ArrayMesh_q3dl2")
 skeleton = NodePath("")
 
 [node name="MH1" type="Node3D" parent="mh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.82749, 4.11499, 4.94587)
 script = ExtResource("1_lrcm6")
 
 [node name="chasis" type="MeshInstance3D" parent="mh/MH1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.94544, 4.09006, 4.91508)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00466156, -0.0160456, 0.0025245)
 mesh = SubResource("ArrayMesh_n03wm")
 skeleton = NodePath("")
 
 [node name="light" type="SpotLight3D" parent="mh/MH1"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -1.94544, 4.035, 4.91508)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.00466156, -0.071105, 0.0025245)
 light_color = Color(0, 0.733333, 0.219608, 1)
 light_energy = 6.977
 light_indirect_energy = 4.849
@@ -926,20 +929,21 @@ spot_angle = 18.43
 spot_angle_attenuation = 7.35167
 
 [node name="light_source" type="MeshInstance3D" parent="mh/MH1"]
-transform = Transform3D(0.999929, 0.0119298, 0, -0.0119298, 0.999929, 0, 0, 0, 1, -1.94465, 4.04133, 4.91684)
+transform = Transform3D(0.999929, 0.0119298, 0, -0.0119298, 0.999929, 0, 0, 0, 1, -0.00387144, -0.0647755, 0.0042845)
 mesh = SubResource("ArrayMesh_30jwe")
 skeleton = NodePath("")
 
 [node name="MH2" type="Node3D" parent="mh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8342, 4.10574, 1.63566)
 script = ExtResource("1_lrcm6")
 
 [node name="chasis" type="MeshInstance3D" parent="mh/MH2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.94544, 4.09006, 1.67704)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00404358, 0.000164986, -0.00196183)
 mesh = SubResource("ArrayMesh_chib0")
 skeleton = NodePath("")
 
 [node name="light" type="SpotLight3D" parent="mh/MH2"]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -1.94544, 4.035, 1.67704)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.00404358, -0.0548944, -0.00196183)
 light_color = Color(1, 0, 0.919238, 1)
 light_energy = 6.977
 light_indirect_energy = 4.849
@@ -951,7 +955,7 @@ spot_angle = 18.43
 spot_angle_attenuation = 7.35167
 
 [node name="light_source" type="MeshInstance3D" parent="mh/MH2"]
-transform = Transform3D(0.999929, 0.0119298, 0, -0.0119298, 0.999929, 0, 0, 0, 1, -1.94465, 4.04133, 1.67399)
+transform = Transform3D(0.999929, 0.0119298, 0, -0.0119298, 0.999929, 0, 0, 0, 1, 0.00483346, -0.0485649, -0.00501192)
 mesh = SubResource("ArrayMesh_lpfwx")
 skeleton = NodePath("")
 
