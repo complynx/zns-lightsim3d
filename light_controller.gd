@@ -96,6 +96,8 @@ func decode_u16le(packet, offset):
 	return (msb<<8) + lsb
 
 func parse_artnet_packet(packet):
+	if packet.size()<18:
+		return
 	var universe = decode_u16le(packet, 14)
 	var dmx_data = packet.slice(18) # DMX data
 	var dmx_data_size = dmx_data.size()

@@ -7,8 +7,10 @@ const RGB_FRACTION = 0.5
 const WHITE_FRACTION = 0.5
 const WHITE_COLOR = Color.WHITE
 
-const PAN_LIMIT = 630 # degrees
-const TILT_LIMIT = 200 # degrees
+const PAN_LIMIT = 630 # degrees (half)
+const TILT_LIMIT = 200 # degrees (half)
+const SPEED_SLOW = 5 # degree/sec
+const SPEED_FAST = 300 # degrees/sec
 
 const STROBE_NONE = 1
 const STROBE_SLOW = 0.5 # 1 hertz cycle, duty = 1/2
@@ -27,6 +29,9 @@ var ColorProgram = 0
 var Program = 0
 var PanLSB = 0
 var TiltLSB = 0
+var pan_current = 0
+var tilt_current = 0
+var speed_current = 0
 var pan_target = 0
 var tilt_target = 0
 var color
@@ -88,7 +93,8 @@ func parse_dmx(data):
 		
 	i += 1
 	if data.size() > i:
-		Speed = data.decode_u8(i)
+		Speed = float(data.decode_u8(i))/255.
+	speed_current = SPEED_SLOW + (SPEED_FAST-SPEED_SLOW)*Speed
 		
 	i += 1
 	if data.size() > i:
@@ -135,8 +141,8 @@ func parse_dmx(data):
 	if data.size() > i:
 		TiltLSB = data.decode_u8(i)
 	
-	pan_target = float((PanMSB << 8) + PanLSB)/65535.
-	tilt_target = float((TiltMSB << 8) + TiltLSB)/65535.
+	pan_target = ((float((PanMSB << 8) + PanLSB)/65535.) - 0.5) * PAN_LIMIT
+	tilt_target = ((float((TiltMSB << 8) + TiltLSB)/65535.) - 0.5) * TILT_LIMIT
 	
 	if Strobe >= 0 and Strobe < STROBE_NONE:
 		current_cycle = true
@@ -179,3 +185,29 @@ func _process(delta):
 			set_color(Color.BLACK)
 	if current_strobe_speed == 0 and Program != 0:
 		set_color(program_color())
+	
+	var delta_angle = speed_current * delta
+	if pan_target > pan_current:
+		if pan_current + delta_angle >= pan_target:
+			pan_current = pan_target
+		else:
+			pan_current += delta_angle
+	elif pan_target < pan_current:
+		if pan_current - delta_angle <= pan_target:
+			pan_current = pan_target
+		else:
+			pan_current -= delta_angle
+	if tilt_target > tilt_current:
+		if tilt_current + delta_angle >= tilt_target:
+			tilt_current = tilt_target
+		else:
+			tilt_current += delta_angle
+	elif tilt_target < tilt_current:
+		if tilt_current - delta_angle <= tilt_target:
+			tilt_current = tilt_target
+		else:
+			tilt_current -= delta_angle
+	
+	# Set the object's rotation in Euler angles
+	rotation = Vector3(0, deg_to_rad(pan_current), deg_to_rad(tilt_current))
+	
