@@ -384,6 +384,7 @@ skeleton = NodePath("")
 [node name="immov" parent="Lisoborie" instance=ExtResource("4_k6ons")]
 
 [node name="fixtures" parent="Lisoborie" instance=ExtResource("5_dbimg")]
+visible = false
 
 [node name="stuff" parent="Lisoborie" instance=ExtResource("8_tclhl")]
 

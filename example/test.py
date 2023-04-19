@@ -29,7 +29,7 @@ def send_artnet_packet(data, universe, ip='127.0.0.1', port=6454):
 
 def main():
     num_fixtures = 100  # Adjust this value to match the number of fixtures
-    universe = 20
+    universe = 1
     shift_step = 1
     shift = 1
     delay = 0.1

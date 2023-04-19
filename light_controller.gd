@@ -81,7 +81,11 @@ func load_config_and_generate_cubes(path):
 				thread_data.thread.start(_thread_function.bind(universe))
 			universe_threads_mutex.unlock()
 			
-			var light = SimpleLed.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
+			var light
+			if data.size() > 11 and int(data[11]) == 1:
+				light = MiniPar.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
+			else:
+				light = SimpleLed.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
 			light.set_color(Color(float(data[7])/255., float(data[8])/255., float(data[9])/255., 1))
 			light.set_name("light.{}".format([i]))
 			universes[universe][channel] = light
