@@ -64,7 +64,6 @@ func load_config_and_generate_cubes(path):
 		if not line.is_empty():
 			var data = line.split(",")
 			
-			var light = MeshInstance3D.new()
 			var universe = int(data[0])
 			var channel = int(data[1])
 			if not universes.has(universe):
@@ -82,18 +81,10 @@ func load_config_and_generate_cubes(path):
 				thread_data.thread.start(_thread_function.bind(universe))
 			universe_threads_mutex.unlock()
 			
-			var lightMesh = BoxMesh.new()
-			var size = float(data[8])
-			lightMesh.set_size(Vector3(size,size,size))
-			
-			var emitter = create_emissive_material()
-			universes[universe][channel] = emitter
-			lightMesh.set_material(emitter)
-			emitter.emission = Color(float(data[5])/255., float(data[6])/255., float(data[7])/255., 1)
-			
-			light.set_position(Vector3(float(data[2]), float(data[3]), float(data[4])))
-			light.set_mesh(lightMesh)
+			var light = SimpleLed.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
+			light.set_color(Color(float(data[7])/255., float(data[8])/255., float(data[9])/255., 1))
 			light.set_name("light.{}".format([i]))
+			universes[universe][channel] = light
 
 			add_child(light)
 			i += 1
@@ -172,12 +163,8 @@ func _thread_function(universe):
 		if universes.has(universe):
 			var universe_data = universes[universe]
 			for channel in universe_data:
-				if dmx_data_size > channel + 1:
-					var R = dmx_data[channel-1]
-					var G = dmx_data[channel]
-					var B = dmx_data[channel+1]
-					
-					universe_data[channel].emission = Color(float(R)/255., float(G)/255., float(B)/255., 1)
+				if dmx_data_size >= channel:
+					universe_data[channel].parse_dmx(dmx_data.slice(channel-1))
 	print("Finished universe thread: ", universe)
 
 func poll_udp_packets():
