@@ -1,7 +1,8 @@
 extends Control
 
 @onready var camera = get_node("../../Camera")
-@export_range(0.0, 1.0) var speed: float = .05
+@export_range(0.0, .1) var speed: float = .05
+@export_range(0.0, .1) var cursor_size: float = .05
 
 const SHIFT_MULTIPLIER = 2.5
 const ALT_MULTIPLIER = 1.0 / SHIFT_MULTIPLIER
@@ -15,7 +16,7 @@ var _alt = false
 var pointer_offset = 1.
 
 func _ready():
-	pointer = SimpleLed.new(0.05,0,0,0)
+	pointer = SimpleLed.new(cursor_size,0,0,0)
 	pointer.set_color(Color.WHITE)
 	pointer.set_visible(false)
 	camera.get_parent().add_child.call_deferred(pointer)
