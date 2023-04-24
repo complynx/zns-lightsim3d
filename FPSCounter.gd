@@ -44,18 +44,18 @@ func _process(_delta):
 	var fps = Engine.get_frames_per_second()
 	var txt = "FPS: " + str(fps)
 	
-	var speed_multi = 1
-	if _shift: speed_multi *= SHIFT_MULTIPLIER
-	if _alt: speed_multi *= ALT_MULTIPLIER
-	
 	if pointer.is_visible():
+	
+		var speed_multi = 1
+		if _shift: speed_multi *= SHIFT_MULTIPLIER
+		if _alt: speed_multi *= ALT_MULTIPLIER
 		pointer_offset += speed * speed_multi * (float(_r)-float(_f))
 	
-	var mouse_position = get_viewport().get_mouse_position()
-	
-	var from = camera.project_ray_origin(mouse_position)
-	var to = from + camera.project_ray_normal(mouse_position) * pointer_offset
-	pointer.set_position(to)
-	txt += "\nCursor position: " + str(to)
+		var mouse_position = get_viewport().get_mouse_position()
+		
+		var from = camera.project_ray_origin(mouse_position)
+		var to = from + camera.project_ray_normal(mouse_position) * pointer_offset
+		pointer.set_position(to)
+		txt += "\nCursor position: " + str(to)
 	
 	$Label.text = txt
