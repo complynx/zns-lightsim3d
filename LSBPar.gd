@@ -97,7 +97,7 @@ func program_color():
 		_:
 			return AMBER_COLOR * Dimmer * AMBER_FRACTION
 	
-func _process(delta):
+func _process(_delta):
 	var T = fmod(Time.get_unix_time_from_system(), 1)
 	if current_strobe_speed > 0 and int(T/current_strobe_speed) % 2 == 1:
 		current_cycle = not current_cycle

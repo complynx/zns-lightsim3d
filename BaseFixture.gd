@@ -9,8 +9,6 @@ func _ready():
 	init_fixture()
 
 func init_fixture():
-	var name = get_name()
-	var children = get_children()
 	var source_mesh = $light_source.get_mesh()
 	light_source = StandardMaterial3D.new()
 	light_source.emission_enabled = true
@@ -28,5 +26,5 @@ func set_color(color):
 func get_color():
 	return $light.get_color()
 
-func parse_dmx(data):
+func parse_dmx(_data):
 	pass

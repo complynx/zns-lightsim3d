@@ -1,8 +1,8 @@
 extends Node3D
 
 # Path to the config file
-const EMISSION_ENERGY = 2
-const ARTNET_PORT = 6454
+@export_range(0,10) var EMISSION_ENERGY = 2
+@export var ARTNET_PORT: int = 6454
 
 var universes = {}
 var udp_server = UDPServer.new()
@@ -143,7 +143,6 @@ func _thread_function(universe):
 		thread_data.semaphore.wait()
 		
 		thread_data.mutex.lock()
-		var packets = []
 		if thread_data.packet_buffer.size() == 0:
 			thread_data.mutex.unlock()
 			continue
@@ -208,5 +207,5 @@ func _input(event):
 			load_config_and_generate_cubes(current_file_path)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	poll_udp_packets()

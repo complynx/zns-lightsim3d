@@ -422,6 +422,6 @@ script = ExtResource("12_yqhit")
 [node name="Label" type="Label" parent="CanvasLayer/FPSCounter"]
 layout_mode = 0
 offset_right = 270.0
-offset_bottom = 38.0
+offset_bottom = 45.0
 
 [connection signal="file_selected" from="CanvasLayer/FileDialog" to="CanvasLayer/FileDialog" method="_on_FileDialog_file_selected"]

@@ -1,12 +1,60 @@
 extends Control
 
+@onready var camera = get_node("../../Camera")
+@export_range(0.0, 1.0) var speed: float = .05
 
-# Called when the node enters the scene tree for the first time.
+const SHIFT_MULTIPLIER = 2.5
+const ALT_MULTIPLIER = 1.0 / SHIFT_MULTIPLIER
+
+var pointer
+var _r = false
+var _f = false
+var _shift = false
+var _alt = false
+
+var pointer_offset = 1.
+
 func _ready():
-	pass # Replace with function body.
+	pointer = SimpleLed.new(0.05,0,0,0)
+	pointer.set_color(Color.WHITE)
+	pointer.set_visible(false)
+	camera.get_parent().add_child.call_deferred(pointer)
 
+func _input(event):
+	if event is InputEventMouseButton:
+		match event.button_index:
+			MOUSE_BUTTON_LEFT: # Only allows rotation if right click down
+				if pointer.is_visible() != event.pressed:
+					pointer.set_visible(event.pressed)
+	
+	# Receives key input
+	if event is InputEventKey:
+		match event.keycode:
+			KEY_R:
+				_r = event.pressed
+			KEY_F:
+				_f = event.pressed
+			KEY_SHIFT:
+				_shift = event.pressed
+			KEY_ALT:
+				_alt = event.pressed
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	var fps = Engine.get_frames_per_second()
-	$Label.text = "FPS: " + str(fps)
+	var txt = "FPS: " + str(fps)
+	
+	var speed_multi = 1
+	if _shift: speed_multi *= SHIFT_MULTIPLIER
+	if _alt: speed_multi *= ALT_MULTIPLIER
+	
+	pointer_offset += speed * speed_multi * (float(_r)-float(_f))
+	
+	var mouse_position = get_viewport().get_mouse_position()
+	
+	var from = camera.project_ray_origin(mouse_position)
+	var to = from + camera.project_ray_normal(mouse_position) * pointer_offset
+	pointer.set_position(to)
+	txt += "\nCursor position: " + str(to)
+	
+	$Label.text = txt
