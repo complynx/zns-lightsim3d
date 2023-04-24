@@ -48,7 +48,8 @@ func _process(_delta):
 	if _shift: speed_multi *= SHIFT_MULTIPLIER
 	if _alt: speed_multi *= ALT_MULTIPLIER
 	
-	pointer_offset += speed * speed_multi * (float(_r)-float(_f))
+	if pointer.is_visible():
+		pointer_offset += speed * speed_multi * (float(_r)-float(_f))
 	
 	var mouse_position = get_viewport().get_mouse_position()
 	
