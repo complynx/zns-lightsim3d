@@ -45,6 +45,14 @@ func setup_udp_server():
 func _exit_tree():
 	stop_threads()
 	udp_server.stop()
+	
+func create_light_based_on_data(data):
+	if data.size() > 11:
+		if int(data[11]) == 1:
+			return MiniPar.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
+		elif int(data[11]) == 2:
+			return DirectionalLed.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
+	return SimpleLed.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]))
 
 func load_config_and_generate_cubes(path):
 	current_file_path = path
@@ -81,11 +89,7 @@ func load_config_and_generate_cubes(path):
 				thread_data.thread.start(_thread_function.bind(universe))
 			universe_threads_mutex.unlock()
 			
-			var light
-			if data.size() > 11 and int(data[11]) == 1:
-				light = MiniPar.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
-			else:
-				light = SimpleLed.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
+			var light = create_light_based_on_data(data)
 			light.set_color(Color(float(data[7])/255., float(data[8])/255., float(data[9])/255., 1))
 			light.set_name("light.{}".format([i]))
 			universes[universe][channel] = light

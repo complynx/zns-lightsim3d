@@ -2,22 +2,19 @@ extends BaseFixture
 
 class_name SimpleLed
 
-const LED_BASE_SIZE = 1.1
-const LED_BASE_HEIGHT = 0.1
-const LED_EMITTER_SIZE = 0.9
-const LED_EMITTER_HEIGHT = 0.1
+var lightInstance
+var lightMesh
 
 var R
 var G
 var B
 
-func _init(size, x, y, z, phi, theta):
+func _init(size, x, y, z):
 	set_position(Vector3(x, y, z))
-	rotation = Vector3(deg_to_rad(phi), deg_to_rad(theta), 0)
 	
-	var lightInstance = MeshInstance3D.new()
-	var lightMesh = BoxMesh.new()
-	lightMesh.set_size(Vector3(size*LED_EMITTER_SIZE,size*LED_EMITTER_SIZE,size*LED_EMITTER_HEIGHT))
+	lightInstance = MeshInstance3D.new()
+	lightMesh = BoxMesh.new()
+	lightMesh.set_size(Vector3(size,size,size))
 	light_source = StandardMaterial3D.new()
 	light_source.emission_enabled = true
 	light_source.emission_energy = EMISSION_ENERGY
@@ -26,17 +23,6 @@ func _init(size, x, y, z, phi, theta):
 	lightInstance.set_mesh(lightMesh)
 	lightInstance.set_name("light")
 	add_child(lightInstance)
-	
-	var baseInstance = MeshInstance3D.new()
-	var baseMesh = BoxMesh.new()
-	baseMesh.set_size(Vector3(size*LED_BASE_SIZE,size*LED_BASE_SIZE,size*LED_BASE_HEIGHT))
-	var base_material = StandardMaterial3D.new()
-	base_material.set_albedo(Color.GRAY)
-	baseMesh.set_material(base_material)
-	baseInstance.set_position(Vector3(0, 0, -size*LED_BASE_HEIGHT))
-	baseInstance.set_mesh(baseMesh)
-	baseInstance.set_name("base")
-	add_child(baseInstance)
 
 # Called when the node enters the scene tree for the first time.
 func init_fixture():

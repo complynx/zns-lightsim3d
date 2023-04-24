@@ -1,4 +1,4 @@
-extends SimpleLed
+extends DirectionalLed
 
 class_name MiniPar
 
