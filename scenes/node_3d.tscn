@@ -390,7 +390,7 @@ visible = false
 
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(-0.999999, 0.000587988, -0.00118263, 0.00051428, 0.998114, 0.0613879, 0.0012165, 0.0613873, -0.998113, -0.814942, 1.54222, -5.58333)
-fov = 39.7607
+fov = 61.8
 near = 0.1
 far = 100.0
 script = ExtResource("1_tqkuy")
