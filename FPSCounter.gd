@@ -2,62 +2,78 @@ extends Control
 
 @onready var camera = get_node("../../Camera")
 @onready var lights_parent = get_node("../../genlights")
-@export_range(0.0, .1) var speed: float = .05
-@export_range(0.0, .1) var cursor_size: float = .05
+@export_range(0.0, 5.) var speed: float = 1.
+@export_range(0.0, .1) var cursor_size: float = .01
+@export_range(1., 20.) var big_scale: float = 5.
 
 const SHIFT_MULTIPLIER = 2.5
 const ALT_MULTIPLIER = 1.0 / SHIFT_MULTIPLIER
 
 var pointer
-var _r = false
-var _f = false
+var _i = false
+var _k = false
+var _j = false
+var _l = false
+var _u = false
+var _o = false
 var _shift = false
 var _alt = false
+var _big = false
 
 var pointer_offset = 1.
 
 func _ready():
 	pointer = SimpleLed.new(cursor_size,0,0,0)
 	pointer.set_color(Color.WHITE)
-	pointer.set_visible(false)
 	camera.get_parent().add_child.call_deferred(pointer)
 
 func _input(event):
 	if event is InputEventMouseButton:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT: # Only allows rotation if right click down
-				if pointer.is_visible() != event.pressed:
-					pointer.set_visible(event.pressed)
+				if _big != event.pressed:
+					_big = event.pressed
+				if _big:
+					pointer.scale = Vector3(big_scale,big_scale,big_scale)
+				else:
+					pointer.scale = Vector3(1,1,1)
 	
 	# Receives key input
 	if event is InputEventKey:
 		match event.keycode:
-			KEY_R:
-				_r = event.pressed
-			KEY_F:
-				_f = event.pressed
+			KEY_I:
+				_i = event.pressed
+			KEY_K:
+				_k = event.pressed
+			KEY_J:
+				_j = event.pressed
+			KEY_L:
+				_l = event.pressed
+			KEY_U:
+				_u = event.pressed
+			KEY_O:
+				_o = event.pressed
 			KEY_SHIFT:
 				_shift = event.pressed
 			KEY_ALT:
 				_alt = event.pressed
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
+func _process(delta):
 	var fps = Engine.get_frames_per_second()
 	var txt = "FPS: " + str(fps)
 	
-	if pointer.is_visible():
-	
-		var speed_multi = 1
-		if _shift: speed_multi *= SHIFT_MULTIPLIER
-		if _alt: speed_multi *= ALT_MULTIPLIER
-		pointer_offset += speed * speed_multi * (float(_r)-float(_f))
-	
-		var mouse_position = get_viewport().get_mouse_position()
-		
-		var from = camera.project_ray_origin(mouse_position)
-		var to = from + camera.project_ray_normal(mouse_position) * pointer_offset
-		pointer.set_position(to)
-		txt += "\nCursor position: " + str(to - lights_parent.get_position())
-	
+	var speed = Vector3(
+		float(_j) - float(_l),
+		float(_i) - float(_k),
+		float(_u) - float(_o)
+	) 
+
+	var speed_multi = 1
+	if _shift: speed_multi *= SHIFT_MULTIPLIER
+	if _alt: speed_multi *= ALT_MULTIPLIER
+	pointer_offset = speed * speed_multi * delta
+
+	pointer.position += pointer_offset
+	txt += "\nCursor position: " + str(pointer.position - lights_parent.position)
 	$Label.text = txt
