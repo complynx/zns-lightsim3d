@@ -73,7 +73,7 @@ func _process(delta):
 	if _shift: speed_multi *= SHIFT_MULTIPLIER
 	if _alt: speed_multi *= ALT_MULTIPLIER
 	pointer_offset = speed * speed_multi * delta
-
-	pointer.position += pointer_offset
-	txt += "\nCursor position: " + str(pointer.position - lights_parent.position)
+	
+	pointer.set_position(pointer.get_position() + pointer_offset)
+	txt += "\nCursor position: " + str(pointer.get_position() - lights_parent.get_position())
 	$Label.text = txt
