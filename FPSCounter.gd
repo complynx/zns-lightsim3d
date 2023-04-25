@@ -1,6 +1,7 @@
 extends Control
 
 @onready var camera = get_node("../../Camera")
+@onready var lights_parent = get_node("../../genlights")
 @export_range(0.0, .1) var speed: float = .05
 @export_range(0.0, .1) var cursor_size: float = .05
 
@@ -57,6 +58,6 @@ func _process(_delta):
 		var from = camera.project_ray_origin(mouse_position)
 		var to = from + camera.project_ray_normal(mouse_position) * pointer_offset
 		pointer.set_position(to)
-		txt += "\nCursor position: " + str(to)
+		txt += "\nCursor position: " + str(to - lights_parent.get_position())
 	
 	$Label.text = txt
