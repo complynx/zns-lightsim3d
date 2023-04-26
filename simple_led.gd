@@ -9,6 +9,7 @@ var light_source
 var R
 var G
 var B
+var prev_color = Color.BLACK
 
 func _init(size, x, y, z):
 	set_position(Vector3(x, y, z))
@@ -30,7 +31,9 @@ func init_fixture():
 	pass
 
 func set_color(color):
-	light_source.call_deferred("set_emission", color)
+	if prev_color != color:
+		prev_color = color
+		light_source.call_deferred("set_emission", color)
 #	lightMesh.set_material(light_source)
 
 func get_color():
