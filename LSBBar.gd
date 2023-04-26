@@ -1,4 +1,4 @@
-extends BaseFixture
+extends PremadeFixture
 
 class_name LSBBar
 
@@ -17,8 +17,8 @@ var color
 var current_cycle = true # enabled
 var current_strobe_speed = 0
 
-func parse_dmx(data):
-	var i = 0
+func parse_dmx(data, channel):
+	var i = channel
 	if data.size() > i:
 		R = float(data.decode_u8(i))/255.
 		

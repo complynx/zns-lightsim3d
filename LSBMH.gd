@@ -1,4 +1,4 @@
-extends BaseFixture
+extends PremadeFixture
 
 class_name LSBMH
 
@@ -84,8 +84,8 @@ func color_from_program():
 		return (Color(1, 1, 197./255.) * RGB_FRACTION) + (WHITE_COLOR * WHITE_FRACTION)
 	return (Color(1, 1, 234./255.) * RGB_FRACTION) + (WHITE_COLOR * WHITE_FRACTION)
 
-func parse_dmx(data):
-	var i = 0
+func parse_dmx(data, channel):
+	var i = channel
 	if data.size() > i:
 		PanMSB = data.decode_u8(i)
 		

@@ -46,8 +46,8 @@ func get_color():
 	return rgb
 
 
-func parse_dmx(data):
-	var i = 0
+func parse_dmx(data, channel):
+	var i = channel
 	if data.size() > i:
 		R = float(data.decode_u8(i))/255.
 		

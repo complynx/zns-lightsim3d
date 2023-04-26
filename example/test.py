@@ -27,18 +27,62 @@ def send_artnet_packet(data, universe, ip='127.0.0.1', port=6454):
     sock.sendto(artnet_packet, (ip, port))
     sock.close()
 
-def main():
-    num_fixtures = 100  # Adjust this value to match the number of fixtures
-    universe = 1
-    shift_step = 1
-    shift = 1
-    delay = 0.1
 
+import threading
+
+def send_universe(universe, num_threads, num_fixtures, shift_step, delay):
+    shift = 1
+    fps = 0
+    start = time.time()
+    last_fps = 0
+    i = 0
     while True:
+        fps += 1
+        i+=1
+        if i % num_threads == universe % num_threads:
+            print(f"Universe {universe} fps: {last_fps}        ", end="\r")
         led_data = create_rainbow(num_fixtures * 3, shift)
         send_artnet_packet(led_data, universe)
-        time.sleep(delay)
         shift = (shift + shift_step) % (num_fixtures * 3)
+        time.sleep(delay)
+        if time.time()-start > 1:
+            start = time.time()
+            last_fps = fps
+            fps = 0
+
+import argparse
+
+def main():
+    parser = argparse.ArgumentParser(description='Test fixtures')
+    parser.add_argument('-n','--num_fixtures', type=int, default=int(512/3), help='Number of lighting fixtures')
+    parser.add_argument('-S','--universe_start', type=int, default=0, help='DMX universe beginning')
+    parser.add_argument('-F','--universe_finish', type=int, default=1, help='DMX universe end')
+    parser.add_argument('-s','--shift_step', type=int, default=1, help='Steps to shift')
+    parser.add_argument('-d','--delay', type=float, default=1/30, help='Delay between each step of the shifting process (in seconds)')
+
+    args = parser.parse_args()
+
+    num_fixtures = args.num_fixtures
+    universe_start = args.universe_start
+    universe_end = args.universe_finish
+    shift_step = args.shift_step
+    delay = args.delay
+
+    # Your code goes here
+
+    print(f"Sending to Universes {universe_start}-{universe_end} rainbow of {num_fixtures} RGB fixtures with delay of {delay}s")
+
+
+    threads = []
+    for universe in range(universe_start, universe_end+1):
+        t = threading.Thread(target=send_universe, daemon=True, args=(universe, universe_end-universe_start+1, num_fixtures, shift_step, delay))
+        threads.append(t)
+        t.start()
+
+    try:
+        time.sleep(100000000)
+    except Exception as e:
+        print(e)
 
 if __name__ == '__main__':
     main()
