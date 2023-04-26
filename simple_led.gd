@@ -30,8 +30,8 @@ func init_fixture():
 	pass
 
 func set_color(color):
-	light_source.set_emission(color)
-	lightMesh.set_material(light_source)
+	light_source.call_deferred("set_emission", color)
+#	lightMesh.set_material(light_source)
 
 func get_color():
 	return light_source.get_emission()

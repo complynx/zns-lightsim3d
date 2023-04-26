@@ -5,6 +5,8 @@ extends Node3D
 @export var ARTNET_PORT: int = 6454
 @onready var tf = get_node("../CanvasLayer/transform_controller")
 
+const USE_THREADS = true
+
 var universes = {}
 var udp_server = UDPServer.new()
 var current_file_path
@@ -16,7 +18,8 @@ var universe_threads_mutex = Mutex.new()
 
 func _ready():
 	setup_udp_server()
-	start_threads()
+	if USE_THREADS:
+		start_threads()
 	
 	universe0 = [
 		$"../Lisoborie/fixtures/mh/MH1",
@@ -50,7 +53,8 @@ func setup_udp_server():
 	udp_server.listen(ARTNET_PORT)
 	
 func _exit_tree():
-	stop_threads()
+	if USE_THREADS:
+		stop_threads()
 	udp_server.stop()
 	
 func create_light_based_on_data(data):
@@ -71,11 +75,12 @@ func load_config_and_generate_cubes(path):
 	var i = 0
 	file.get_line() # skip first line
 	
-	stop_threads()
-	for child in get_children():
-		remove_child(child)
-	universes = {}
-	start_threads()
+	if USE_THREADS:
+		stop_threads()
+		for child in get_children():
+			remove_child(child)
+		universes = {}
+		start_threads()
 	
 	while not file.eof_reached():
 		var line = file.get_line()
@@ -87,17 +92,18 @@ func load_config_and_generate_cubes(path):
 			if not universes.has(universe):
 				universes[universe] = []
 			
-#			universe_threads_mutex.lock()
-#			if not universe_threads.has(universe):
-#				var thread_data = {
-#					"thread": Thread.new(),
-#					"packet_buffer": [],
-#					"mutex": Mutex.new(),
-#					"semaphore": Semaphore.new()
-#				}
-#				universe_threads[universe] = thread_data
-#				thread_data.thread.start(_thread_function.bind(universe))
-#			universe_threads_mutex.unlock()
+			if USE_THREADS:
+				universe_threads_mutex.lock()
+				if not universe_threads.has(universe):
+					var thread_data = {
+						"thread": Thread.new(),
+						"packet_buffer": [],
+						"mutex": Mutex.new(),
+						"semaphore": Semaphore.new()
+					}
+					universe_threads[universe] = thread_data
+					thread_data.thread.start(_thread_function.bind(universe))
+				universe_threads_mutex.unlock()
 			
 			var light = create_light_based_on_data(data)
 			light.set_color(Color(float(data[7])/255., float(data[8])/255., float(data[9])/255., 1))
@@ -195,20 +201,21 @@ func poll_udp_packets():
 			if packet.size() >= 18:
 				if packet.get_string_from_ascii() == "Art-Net":
 					var universe = decode_u16le(packet, 14)
-					parse_one_packet(packet, universe)
-
-#					universe_threads_mutex.lock()
-#					if universe_threads.has(universe):
-#						var thread_data = universe_threads[universe]
-#						universe_threads_mutex.unlock()
-#						thread_data.mutex.lock()
-#						thread_data.packet_buffer.append(packet)
-#						thread_data.mutex.unlock()
-#						thread_data.semaphore.post()
-#						if not thread_data.thread.is_alive():
-#							print("oops, thread is dead")
-#					else:
-#						universe_threads_mutex.unlock()
+					if USE_THREADS:
+						universe_threads_mutex.lock()
+						if universe_threads.has(universe):
+							var thread_data = universe_threads[universe]
+							universe_threads_mutex.unlock()
+							thread_data.mutex.lock()
+							thread_data.packet_buffer.append(packet)
+							thread_data.mutex.unlock()
+							thread_data.semaphore.post()
+							if not thread_data.thread.is_alive():
+								print("oops, thread is dead")
+						else:
+							universe_threads_mutex.unlock()
+					else:
+						parse_one_packet(packet, universe)
 
 func _input(event):
 	if event is InputEventKey:

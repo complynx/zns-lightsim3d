@@ -39,8 +39,8 @@ func _init(size, x, y, z, phi, theta):
 func set_color(color):
 	rgb = color
 	var realcolor = (rgb*RGB_FRACTION) + (WHITE_COLOR*WHITE_FRACTION*W) + (AMBER_COLOR*AMBER_FRACTION*A) + (UV_COLOR*UV_FRACTION*UV)
-	light_source.emission = realcolor
-	light.light_color = realcolor
+	light_source.call_deferred("set_emission", realcolor)
+	light.call_deferred("set_color", realcolor)
 
 func get_color():
 	return rgb

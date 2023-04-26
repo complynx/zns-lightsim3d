@@ -55,8 +55,8 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(description='Test fixtures')
     parser.add_argument('-n','--num_fixtures', type=int, default=int(512/3), help='Number of lighting fixtures')
-    parser.add_argument('-S','--universe_start', type=int, default=0, help='DMX universe beginning')
-    parser.add_argument('-F','--universe_finish', type=int, default=1, help='DMX universe end')
+    parser.add_argument('-S','--universe_start', type=int, default=8, help='DMX universe beginning')
+    parser.add_argument('-F','--universe_finish', type=int, default=55, help='DMX universe end')
     parser.add_argument('-s','--shift_step', type=int, default=1, help='Steps to shift')
     parser.add_argument('-d','--delay', type=float, default=1/30, help='Delay between each step of the shifting process (in seconds)')
 
