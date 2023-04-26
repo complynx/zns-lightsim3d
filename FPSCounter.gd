@@ -2,6 +2,7 @@ extends Control
 
 @onready var camera = get_node("../../Camera")
 @onready var lights_parent = get_node("../../genlights")
+@onready var tf = get_node("../transform_controller")
 @export_range(0.0, 5.) var speed: float = 1.
 @export_range(0.0, .1) var cursor_size: float = .01
 @export_range(1., 20.) var big_scale: float = 5.
@@ -63,7 +64,7 @@ func _process(delta):
 	var fps = Engine.get_frames_per_second()
 	var txt = "FPS: " + str(fps)
 	
-	var speed = Vector3(
+	var p_speed = Vector3(
 		float(_j) - float(_l),
 		float(_i) - float(_k),
 		float(_u) - float(_o)
@@ -72,8 +73,11 @@ func _process(delta):
 	var speed_multi = 1
 	if _shift: speed_multi *= SHIFT_MULTIPLIER
 	if _alt: speed_multi *= ALT_MULTIPLIER
-	pointer_offset = speed * speed_multi * delta
+	pointer_offset = p_speed * speed_multi * delta
 	
 	pointer.set_position(pointer.get_position() + pointer_offset)
-	txt += "\nCursor position: " + str(pointer.get_position() - lights_parent.get_position())
+	var pos_display = (pointer.get_position() - lights_parent.get_position())
+	if tf.for_cursor:
+		pos_display = tf.transform * pos_display
+	txt += "\nCursor position: " + str(pos_display)
 	$Label.text = txt

@@ -3,6 +3,7 @@ extends Node3D
 # Path to the config file
 @export_range(0,10) var EMISSION_ENERGY = 2
 @export var ARTNET_PORT: int = 6454
+@onready var tf = get_node("../CanvasLayer/transform_controller")
 
 var universes = {}
 var udp_server = UDPServer.new()
@@ -38,6 +39,11 @@ func _ready():
 		147: $"../Lisoborie/fixtures/pars/P7",
 		156: $"../Lisoborie/fixtures/pars/P8"
 	}
+	var zeros = PackedByteArray()
+	zeros.resize(20)
+	zeros.fill(0)
+	for channel in universe0:
+		universe0[channel].parse_dmx(zeros)
 
 func setup_udp_server():
 	udp_server.listen(ARTNET_PORT)
@@ -47,12 +53,15 @@ func _exit_tree():
 	udp_server.stop()
 	
 func create_light_based_on_data(data):
+	var xyz = Vector3(float(data[2]), float(data[3]), float(data[4]))
+	if tf.for_lights:
+		xyz = tf.transform_inversed * xyz
 	if data.size() > 11:
 		if int(data[11]) == 1:
-			return MiniPar.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
+			return MiniPar.new(float(data[10]), xyz.x, xyz.y, xyz.z, float(data[5]), float(data[6]))
 		elif int(data[11]) == 2:
-			return DirectionalLed.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]), float(data[5]), float(data[6]))
-	return SimpleLed.new(float(data[10]), float(data[2]), float(data[3]), float(data[4]))
+			return DirectionalLed.new(float(data[10]), xyz.x, xyz.y, xyz.z, float(data[5]), float(data[6]))
+	return SimpleLed.new(float(data[10]), xyz.x, xyz.y, xyz.z)
 
 func load_config_and_generate_cubes(path):
 	current_file_path = path
@@ -205,7 +214,26 @@ func _input(event):
 				fd.popup_centered()
 		elif Input.get_action_strength("reload_file"):
 			load_config_and_generate_cubes(current_file_path)
+		if Input.get_action_strength("open_transform_control"):
+			var fd = $"../CanvasLayer/transform_controller"
+			if not fd.is_visible():
+				fd.popup_centered()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	poll_udp_packets()
+
+
+func _on_bar_toggled(button_pressed):
+	$"../Lisoborie/Bar lights/Lamp 1/light".set_visible(button_pressed)
+	$"../Lisoborie/Bar lights/Lamp 2/light".set_visible(button_pressed)
+	$"../Lisoborie/Bar lights/Lamp 3/light".set_visible(button_pressed)
+	$"../Lisoborie/Bar lights/Lamp 4/light".set_visible(button_pressed)
+	$"../Lisoborie/Bar lights/Lamp 5/light".set_visible(button_pressed)
+
+func _on_kitchen_toggled(button_pressed):
+	$"../Lisoborie/Kitchen light".set_visible(button_pressed)
+
+
+func _on_main_toggled(button_pressed):
+	$"../Lisoborie/Ceiling lamps/lights".set_visible(button_pressed)

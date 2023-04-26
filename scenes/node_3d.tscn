@@ -1,9 +1,9 @@
-[gd_scene load_steps=33 format=3 uid="uid://ct8onfmoent3w"]
+[gd_scene load_steps=34 format=3 uid="uid://ct8onfmoent3w"]
 
 [ext_resource type="Script" path="res://Camera.gd" id="1_tqkuy"]
-[ext_resource type="PackedScene" path="res://scenes/ceiling_lamps.tscn" id="2_2t7ss"]
+[ext_resource type="PackedScene" uid="uid://csvjspll7qmcr" path="res://scenes/ceiling_lamps.tscn" id="2_2t7ss"]
 [ext_resource type="PackedScene" uid="uid://t5kk2obvhru4" path="res://scenes/curtains.tscn" id="3_21d44"]
-[ext_resource type="PackedScene" path="res://scenes/bar_lights.tscn" id="4_erefl"]
+[ext_resource type="PackedScene" uid="uid://c801527w273ku" path="res://scenes/bar_lights.tscn" id="4_erefl"]
 [ext_resource type="PackedScene" path="res://scenes/immov.tscn" id="4_k6ons"]
 [ext_resource type="PackedScene" uid="uid://cct7p42xas8dn" path="res://scenes/fixtures.tscn" id="5_dbimg"]
 [ext_resource type="PackedScene" uid="uid://crpdxwgxo1m3" path="res://scenes/vending.tscn" id="5_jge6x"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://FileDialog.gd" id="11_hbivo"]
 [ext_resource type="Script" path="res://FPSCounter.gd" id="12_yqhit"]
 [ext_resource type="Script" path="res://light_controller.gd" id="13_c1vow"]
+[ext_resource type="Script" path="res://transform_controller.gd" id="13_xph57"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tcj80"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -289,7 +290,6 @@ light_energy = 1.485
 light_indirect_energy = 1.323
 light_size = 0.586
 light_specular = 1.146
-light_bake_mode = 1
 shadow_enabled = true
 omni_range = 238.474
 
@@ -300,7 +300,6 @@ light_energy = 1.485
 light_indirect_energy = 1.323
 light_size = 0.586
 light_specular = 1.146
-light_bake_mode = 1
 shadow_enabled = true
 omni_range = 238.474
 
@@ -314,13 +313,11 @@ light_energy = 3.161
 light_indirect_energy = 1.323
 light_size = 0.586
 light_specular = 1.146
-light_bake_mode = 1
 shadow_enabled = true
 omni_range = 238.474
 
 [node name="lampshade wall" type="MeshInstance3D" parent="Lisoborie"]
 transform = Transform3D(0.0718314, 0, 0, 0, 0.0654804, -0.0295309, 0, 0.0295309, 0.0654804, -0.90754, 1.68785, 16.5751)
-visible = false
 mesh = SubResource("ArrayMesh_5hvok")
 skeleton = NodePath("")
 
@@ -384,7 +381,6 @@ skeleton = NodePath("")
 [node name="immov" parent="Lisoborie" instance=ExtResource("4_k6ons")]
 
 [node name="fixtures" parent="Lisoborie" instance=ExtResource("5_dbimg")]
-visible = false
 
 [node name="stuff" parent="Lisoborie" instance=ExtResource("8_tclhl")]
 
@@ -424,4 +420,139 @@ layout_mode = 0
 offset_right = 270.0
 offset_bottom = 45.0
 
+[node name="transform_controller" type="Window" parent="CanvasLayer"]
+title = "Transform matrix"
+position = Vector2i(382, 247)
+size = Vector2i(344, 177)
+visible = false
+script = ExtResource("13_xph57")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/transform_controller"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/transform_controller/VBoxContainer"]
+layout_mode = 2
+columns = 4
+
+[node name="1_1" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="1_2" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="1_3" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="1_4" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="2_1" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="2_2" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="2_3" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="2_4" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="3_1" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="3_2" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="3_3" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="3_4" type="SpinBox" parent="CanvasLayer/transform_controller/VBoxContainer/GridContainer"]
+layout_mode = 2
+min_value = -10000.0
+max_value = 10000.0
+step = 0.0
+
+[node name="for_cursor" type="CheckButton" parent="CanvasLayer/transform_controller/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cursor coordinates"
+
+[node name="for_lights" type="CheckButton" parent="CanvasLayer/transform_controller/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "lights coordinates"
+
+[node name="switchboard" type="VBoxContainer" parent="CanvasLayer"]
+offset_left = 19.0
+offset_top = 442.0
+offset_right = 114.0
+offset_bottom = 639.0
+
+[node name="bar" type="CheckButton" parent="CanvasLayer/switchboard"]
+layout_mode = 2
+button_pressed = true
+text = "bar"
+
+[node name="kitchen" type="CheckButton" parent="CanvasLayer/switchboard"]
+layout_mode = 2
+button_pressed = true
+text = "kitchen"
+
+[node name="main" type="CheckButton" parent="CanvasLayer/switchboard"]
+layout_mode = 2
+text = "main"
+
 [connection signal="file_selected" from="CanvasLayer/FileDialog" to="CanvasLayer/FileDialog" method="_on_FileDialog_file_selected"]
+[connection signal="close_requested" from="CanvasLayer/transform_controller" to="CanvasLayer/transform_controller" method="_on_close_requested"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/1_1" to="CanvasLayer/transform_controller" method="_on_1_1_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/1_2" to="CanvasLayer/transform_controller" method="_on_1_2_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/1_3" to="CanvasLayer/transform_controller" method="_on_1_3_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/1_4" to="CanvasLayer/transform_controller" method="_on_1_4_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/2_1" to="CanvasLayer/transform_controller" method="_on_2_1_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/2_2" to="CanvasLayer/transform_controller" method="_on_2_2_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/2_3" to="CanvasLayer/transform_controller" method="_on_2_3_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/2_4" to="CanvasLayer/transform_controller" method="_on_2_4_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/3_1" to="CanvasLayer/transform_controller" method="_on_3_1_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/3_2" to="CanvasLayer/transform_controller" method="_on_3_2_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/3_3" to="CanvasLayer/transform_controller" method="_on_3_3_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/transform_controller/VBoxContainer/GridContainer/3_4" to="CanvasLayer/transform_controller" method="_on_3_4_value_changed"]
+[connection signal="toggled" from="CanvasLayer/transform_controller/VBoxContainer/for_cursor" to="CanvasLayer/transform_controller" method="_on_for_cursor_toggled"]
+[connection signal="toggled" from="CanvasLayer/transform_controller/VBoxContainer/for_lights" to="CanvasLayer/transform_controller" method="_on_for_lights_toggled"]
+[connection signal="toggled" from="CanvasLayer/switchboard/bar" to="genlights" method="_on_bar_toggled"]
+[connection signal="toggled" from="CanvasLayer/switchboard/kitchen" to="genlights" method="_on_kitchen_toggled"]
+[connection signal="toggled" from="CanvasLayer/switchboard/main" to="genlights" method="_on_main_toggled"]
