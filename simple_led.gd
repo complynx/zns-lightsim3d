@@ -9,7 +9,8 @@ var light_source
 var R
 var G
 var B
-var prev_color = Color.BLACK
+var _color = Color.BLACK
+var _color_changed = Semaphore.new()
 
 func _init(size, x, y, z):
 	set_position(Vector3(x, y, z))
@@ -30,10 +31,14 @@ func _init(size, x, y, z):
 func init_fixture():
 	pass
 
+func _process(_delta):
+	if _color_changed.try_wait():
+		light_source.set_emission(_color)
+
 func set_color(color):
-	if prev_color != color:
-		prev_color = color
-		light_source.call_deferred("set_emission", color)
+	if _color != color:
+		_color = color
+		_color_changed.post()
 #	lightMesh.set_material(light_source)
 
 func get_color():

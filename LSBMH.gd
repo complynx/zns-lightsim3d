@@ -209,6 +209,7 @@ func _process(delta):
 			tilt_current = tilt_target
 		else:
 			tilt_current -= delta_angle
+	super._process(delta)
 	
 	# Set the object's rotation in Euler angles
 	rotation = Vector3(0, deg_to_rad(pan_current), deg_to_rad(tilt_current))

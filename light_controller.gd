@@ -6,6 +6,8 @@ extends Node3D
 @onready var tf = get_node("../CanvasLayer/transform_controller")
 
 const USE_THREADS = true
+const USE_MULTIPLE_SOCKETS = true
+const DEBUG_UNIVERSE = -1 # default = -1
 
 var universes = {}
 var udp_server = UDPServer.new()
@@ -17,7 +19,8 @@ var running = false
 var universe_threads_mutex = Mutex.new()
 
 func _ready():
-	setup_udp_server()
+	if not USE_MULTIPLE_SOCKETS:
+		setup_udp_server()
 	if USE_THREADS:
 		start_threads()
 	
@@ -55,7 +58,8 @@ func setup_udp_server():
 func _exit_tree():
 	if USE_THREADS:
 		stop_threads()
-	udp_server.stop()
+	if not USE_MULTIPLE_SOCKETS:
+		udp_server.stop()
 	
 func create_light_based_on_data(data):
 	var xyz = Vector3(float(data[2]), float(data[3]), float(data[4]))
@@ -93,17 +97,7 @@ func load_config_and_generate_cubes(path):
 				universes[universe] = []
 			
 			if USE_THREADS:
-				universe_threads_mutex.lock()
-				if not universe_threads.has(universe):
-					var thread_data = {
-						"thread": Thread.new(),
-						"packet_buffer": [],
-						"mutex": Mutex.new(),
-						"semaphore": Semaphore.new()
-					}
-					universe_threads[universe] = thread_data
-					thread_data.thread.start(_thread_function.bind(universe))
-				universe_threads_mutex.unlock()
+				start_thread(universe)
 			
 			var light = create_light_based_on_data(data)
 			light.set_color(Color(float(data[7])/255., float(data[8])/255., float(data[9])/255., 1))
@@ -127,56 +121,98 @@ func decode_u16le(packet, offset):
 	var lsb = packet.decode_u8(offset) # Art-Net universe
 	var msb = packet.decode_u8(offset+1) # Art-Net universe
 	return (msb<<8) + lsb
+	
+func start_thread(universe):
+	universe_threads_mutex.lock()
+	if not universe_threads.has(universe):
+		var thread_data = {
+			"thread": Thread.new(),
+			"packet_buffer": [],
+			"mutex": Mutex.new(),
+			"semaphore": Semaphore.new()
+		}
+		if USE_MULTIPLE_SOCKETS:
+			thread_data["udp_server"] = UDPServer.new()
+			thread_data["udp_server"].listen(ARTNET_PORT + universe)
+		universe_threads[universe] = thread_data
+		thread_data.thread.start(_thread_function.bind(universe))
+	universe_threads_mutex.unlock()
 
 func start_threads():
-	universe_threads_mutex.lock()
 	running = true
-	var thread_data = {
-		"thread": Thread.new(),
-		"packet_buffer": [],
-		"mutex": Mutex.new(),
-		"semaphore": Semaphore.new()
-	}
-	thread_data.thread.start(_thread_function.bind(0))
-	universe_threads[0] = thread_data
-	universe_threads_mutex.unlock()
+	start_thread(0)
 
 func stop_threads():
 	universe_threads_mutex.lock()
 	running = false
 	for data in universe_threads.values():
-		print("posting to semaphore")
-		data.semaphore.post()
+		if USE_MULTIPLE_SOCKETS:
+			data["udp_server"].stop()
+		else:
+			print("posting to semaphore")
+			data.semaphore.post()
 		data.thread.wait_to_finish()
 		print("joined thread")
 	universe_threads = {}
 	universe_threads_mutex.unlock()
+	
+func multiple_universe_thread_tick(universe, server):
+	server.poll()
+	while server.is_listening() and server.is_connection_available():
+		var peer: PacketPeerUDP = server.take_connection()
+		var latest_packet = null
+		var latest_sequence = 1000
+		while peer.get_available_packet_count() > 0:
+			var packet = peer.get_packet()
+			if packet.size() >= 18:
+				if packet.get_string_from_ascii() == "Art-Net":
+					var packet_universe = decode_u16le(packet, 14)
+					if packet_universe == universe:
+						
+						var sequence = packet.decode_u8(12)
+						if sequence >= latest_sequence or (latest_sequence - sequence) > 128:
+							latest_packet = packet
+							latest_sequence = sequence
+		if latest_sequence < 1000:
+			parse_one_packet(latest_packet, universe)
 
 func _thread_function(universe):
 	universe_threads_mutex.lock()
 	var thread_data = universe_threads[universe]
 	universe_threads_mutex.unlock()
 	print("Started universe thread: ", universe)
-	while running:
-		thread_data.semaphore.wait()
-		
-		thread_data.mutex.lock()
-		if thread_data.packet_buffer.size() == 0:
-			thread_data.mutex.unlock()
-			continue
-		
-		var latest_packet = thread_data.packet_buffer.pop_front()
-		var latest_sequence = latest_packet.decode_u8(12)
-		while thread_data.packet_buffer.size() > 0:
-			var packet = thread_data.packet_buffer.pop_front()
-			var sequence = packet.decode_u8(12)
+	if USE_MULTIPLE_SOCKETS and universe != DEBUG_UNIVERSE:
+		var server = thread_data["udp_server"]
+		while running:
+			var start = Time.get_ticks_msec()
+			multiple_universe_thread_tick(universe, server)
+			var delta = Time.get_ticks_msec()-start
+			var frame_time = int(800./Engine.get_frames_per_second())
+			if delta > frame_time:
+				OS.delay_msec(delta) # A little less than real FPS
+			else:
+				OS.delay_msec(frame_time) # A little less than real FPS
+	else:
+		while running:
+			thread_data.semaphore.wait()
 			
-			if sequence >= latest_sequence or (latest_sequence - sequence) > 128:
-				latest_packet = packet
-				latest_sequence = sequence
-		thread_data.mutex.unlock()
-		
-		parse_one_packet(latest_packet, universe)
+			thread_data.mutex.lock()
+			if thread_data.packet_buffer.size() == 0:
+				thread_data.mutex.unlock()
+				continue
+			
+			var latest_packet = thread_data.packet_buffer.pop_front()
+			var latest_sequence = latest_packet.decode_u8(12)
+			while thread_data.packet_buffer.size() > 0:
+				var packet = thread_data.packet_buffer.pop_front()
+				var sequence = packet.decode_u8(12)
+				
+				if sequence >= latest_sequence or (latest_sequence - sequence) > 128:
+					latest_packet = packet
+					latest_sequence = sequence
+			thread_data.mutex.unlock()
+			
+			parse_one_packet(latest_packet, universe)
 	print("Finished universe thread: ", universe)
 
 func parse_one_packet(latest_packet, universe):
@@ -232,7 +268,16 @@ func _input(event):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	poll_udp_packets()
+	if not USE_MULTIPLE_SOCKETS:
+		poll_udp_packets()
+	elif DEBUG_UNIVERSE >= 0:
+		universe_threads_mutex.lock()
+		if DEBUG_UNIVERSE in universe_threads:
+			var server = universe_threads[DEBUG_UNIVERSE]["udp_server"]
+			universe_threads_mutex.unlock()
+			multiple_universe_thread_tick(DEBUG_UNIVERSE, server)
+		else:
+			universe_threads_mutex.unlock()
 
 
 func _on_bar_toggled(button_pressed):

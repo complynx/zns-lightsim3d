@@ -30,7 +30,7 @@ def send_artnet_packet(data, universe, ip='127.0.0.1', port=6454):
 
 import threading
 
-def send_universe(universe, num_threads, num_fixtures, shift_step, delay):
+def send_universe(universe, num_threads, num_fixtures, shift_step, delay, port, barrier):
     shift = 1
     fps = 0
     start = time.time()
@@ -42,13 +42,14 @@ def send_universe(universe, num_threads, num_fixtures, shift_step, delay):
         if i % num_threads == universe % num_threads:
             print(f"Universe {universe} fps: {last_fps}        ", end="\r")
         led_data = create_rainbow(num_fixtures * 3, shift)
-        send_artnet_packet(led_data, universe)
+        send_artnet_packet(led_data, universe, port=port)
         shift = (shift + shift_step) % (num_fixtures * 3)
         time.sleep(delay)
         if time.time()-start > 1:
             start = time.time()
             last_fps = fps
             fps = 0
+        barrier.wait()
 
 import argparse
 
@@ -58,7 +59,9 @@ def main():
     parser.add_argument('-S','--universe_start', type=int, default=8, help='DMX universe beginning')
     parser.add_argument('-F','--universe_finish', type=int, default=55, help='DMX universe end')
     parser.add_argument('-s','--shift_step', type=int, default=1, help='Steps to shift')
-    parser.add_argument('-d','--delay', type=float, default=1/30, help='Delay between each step of the shifting process (in seconds)')
+    parser.add_argument('-p','--port', type=int, default=6454, help='Art-Net port (or starting port if with -m)')
+    parser.add_argument('-d','--delay', type=float, default=0.01, help='Delay between each step of the shifting process (in seconds)')
+    parser.add_argument('-m','--multiple_ports', action='store_true', help='use multiple ports (each universe port = Art-Net port + universe number)')
 
     args = parser.parse_args()
 
@@ -72,10 +75,27 @@ def main():
 
     print(f"Sending to Universes {universe_start}-{universe_end} rainbow of {num_fixtures} RGB fixtures with delay of {delay}s")
 
+    NUM_THREADS = universe_end-universe_start+1
+    barrier = threading.Barrier(NUM_THREADS)
 
     threads = []
     for universe in range(universe_start, universe_end+1):
-        t = threading.Thread(target=send_universe, daemon=True, args=(universe, universe_end-universe_start+1, num_fixtures, shift_step, delay))
+        port = args.port
+        if args.multiple_ports:
+            port += universe
+        t = threading.Thread(
+            target=send_universe,
+            daemon=True,
+            args=(
+                universe,
+                NUM_THREADS,
+                num_fixtures,
+                shift_step,
+                delay,
+                port,
+                barrier
+            )
+        )
         threads.append(t)
         t.start()
 
@@ -86,3 +106,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+

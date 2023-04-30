@@ -48,7 +48,7 @@ func parse_dmx(data, channel):
 		Strobe = (255.-float(Strobe)-STROBE_NONE)/(255.-STROBE_NONE)
 		current_strobe_speed = STROBE_FAST + (STROBE_SLOW-STROBE_FAST)*Strobe
 
-func _process(_delta):
+func _process(delta):
 	var T = fmod(Time.get_unix_time_from_system(), 1)
 	if current_strobe_speed > 0 and int(T/current_strobe_speed) % 2 == 1:
 		current_cycle = not current_cycle
@@ -56,3 +56,5 @@ func _process(_delta):
 			set_color(color)
 		else:
 			set_color(Color.BLACK)
+	
+	super._process(delta)
