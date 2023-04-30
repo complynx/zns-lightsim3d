@@ -17,6 +17,7 @@ var universe0 = []
 var universe_threads = {}
 var running = false
 var universe_threads_mutex = Mutex.new()
+var multiple_sockets_mutex = Mutex.new()
 
 func _ready():
 	if not USE_MULTIPLE_SOCKETS:
@@ -85,6 +86,9 @@ func load_config_and_generate_cubes(path):
 			remove_child(child)
 		universes = {}
 		start_threads()
+		
+	if USE_MULTIPLE_SOCKETS:
+		multiple_sockets_mutex.lock()
 	
 	while not file.eof_reached():
 		var line = file.get_line()
@@ -109,6 +113,10 @@ func load_config_and_generate_cubes(path):
 			add_child(light)
 			i += 1
 
+	
+	if USE_MULTIPLE_SOCKETS:
+		multiple_sockets_mutex.unlock()
+	
 	file.close()
 
 func create_emissive_material():
@@ -182,6 +190,8 @@ func _thread_function(universe):
 	universe_threads_mutex.unlock()
 	print("Started universe thread: ", universe)
 	if USE_MULTIPLE_SOCKETS and universe != DEBUG_UNIVERSE:
+		multiple_sockets_mutex.lock()
+		multiple_sockets_mutex.unlock()
 		var server = thread_data["udp_server"]
 		while running:
 			var start = Time.get_ticks_msec()
